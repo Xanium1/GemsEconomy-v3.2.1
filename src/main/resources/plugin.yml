@@ -1,0 +1,23 @@
+name: GemsEconomy
+version: 2.5.3
+main: me.johncrafted.gemseconomy.GemsCore
+author: JohnCrafted
+description: An custom economy plugin for spigot servers.
+website: https://www.spigotmc.org/resources/gemseconomy.19655/
+commands:
+  balance:
+    usage: /balance (player)
+    aliases: [bal, gembal, gemsbalance, gemsbal]
+    description: Sends your balance or another players.
+  eco:
+    usage: /eco <args>
+    aliases: [economy, geco]
+    description: Economy management command.
+  pay:
+    usage: /pay <user> <amount>
+    aliases: [gpay]
+    description: Pay a user an amount.
+  cheque:
+    usage: /cheque
+    aliases: [banknote, note, gnote]
+    description: Write or Redeem cheques.

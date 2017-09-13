@@ -1,0 +1,25 @@
+# GemsEconomy plugin created by JohnCrafted, https://www.spigotmc.org/resources/gemseconomy.19655/
+# If you are looking for the account section. Go to the file "accounts.yml" or your mysql database.
+# Please do not reload your server, restart it instead.
+# ------------------------------------------------------------------------------------------------------------------------------------------
+# MVdWPlaceholderAPI hook, requires the plugin "MVdWPlaceholderAPI", " https://www.spigotmc.org/resources/mvdwplaceholderapi.11182/ "
+# Clips PlaceholderAPI hook, requires the plugin "PlaceholderAPI", " https://www.spigotmc.org/resources/placeholderapi.6245/ "
+# If you don't have either of the plugins above installed and set these two settings to "true", you will get an error.
+# ------------------------------------------------------------------------------------------------------------------------------------------
+# Messages, You can edit these messages which show up ingame, to your liking.
+# prefix will always show up before the messages ex: [prefix, message]
+# txtColor is the color of for example the "noPermission" string.
+# The rest is just string messages.
+# Do NOT EDIT the 'balance:' words or any ending with a colon.
+# If you forgot the value tags... [%player%, %balance%, %amount%]
+# NB, You have to put the text color's code after any placeholders like those up above this string sentence.
+# ------------------------------------------------------------------------------------------------------------------------------------------
+
+Todo List:
+
+- Update balances in Hikari. (Done)
+- Balance command. (Done)
+- Add, remove, set command. (Done)
+- Saving userdata. (Done)
+- Customizable messages in config. (Done)
+- Finish the API class (Done).

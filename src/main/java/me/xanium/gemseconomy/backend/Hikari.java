@@ -1,9 +1,17 @@
-package me.johncrafted.gemseconomy.backend;
+/*
+ * Copyright Xanium Development (c) 2013-2018. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar branding
+ * are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming
+ * any contents as your own will break the terms of the license, and void any agreements with you, the third party.
+ * Thank you.
+ */
+
+package me.xanium.gemseconomy.backend;
 
 import com.zaxxer.hikari.HikariDataSource;
-import me.johncrafted.gemseconomy.GemsCore;
-import me.johncrafted.gemseconomy.api.EcoAction;
-import me.johncrafted.gemseconomy.api.GemsAPI;
+import me.xanium.gemseconomy.GemsCore;
+import me.xanium.gemseconomy.api.EcoAction;
+import me.xanium.gemseconomy.api.GemsAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -11,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Created by John on 28.03.2017.
@@ -32,7 +41,7 @@ public class Hikari {
         String password = plugin.getConfig().getString("mysql.password");
 
         hikari = new HikariDataSource();
-        hikari.setMaximumPoolSize(20);
+        hikari.setMaximumPoolSize(10);
         hikari.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         hikari.addDataSourceProperty("serverName", address);
         hikari.addDataSourceProperty("port", port);
@@ -41,7 +50,7 @@ public class Hikari {
         hikari.addDataSourceProperty("password", password);
 
         try (Connection connection = hikari.getConnection()){
-            connection.prepareStatement("CREATE TABLE IF NOT EXISTS `accounts` (`uuid` VARCHAR(255), UNIQUE KEY idx(uuid), `name` VARCHAR(255), `balance` LONG)").executeUpdate();
+            connection.prepareStatement("CREATE TABLE IF NOT EXISTS `accounts` (`uuid` VARCHAR(255), UNIQUE KEY idx(uuid), `name` VARCHAR(255), `balance` DOUBLE)").executeUpdate();
         }catch(SQLException ex){
             ex.printStackTrace();
         }
@@ -74,7 +83,7 @@ public class Hikari {
                         p = connection.prepareStatement(createPlayer);
                         p.setString(1, player.getUniqueId().toString());
                         p.setString(2, player.getName());
-                        p.setLong(3, GemsCore.getInstance().getConfig().getLong("Settings.startingbal"));
+                        p.setDouble(3, GemsCore.getInstance().getConfig().getLong("Settings.startingbal"));
                         p.executeUpdate();
                     }
                 }catch(SQLException ex){
@@ -84,11 +93,11 @@ public class Hikari {
         }.runTaskAsynchronously(GemsCore.getInstance());
     }
 
-    public static void updateBalance(EcoAction action, Player player, long amount){
+    public static void updateBalance(EcoAction action, UUID uuid, double amount){
         new BukkitRunnable(){
             @Override
             public void run() {
-                long current = GemsAPI.getBalance(player);
+                double current = GemsAPI.getBalance(uuid);
                 PreparedStatement p;
                 String updateString = "UPDATE `accounts` SET `balance`=? WHERE `uuid`=?";
                 UserConfig userConfig = UserConfig.getInstance();
@@ -98,17 +107,17 @@ public class Hikari {
                     if(GemsCore.isHikari()) {
                         try (Connection connection = getHikari().getConnection()) {
                             p = connection.prepareStatement(updateString);
-                            p.setLong(1, current + amount);
-                            p.setString(2, player.getUniqueId().toString());
+                            p.setDouble(1, current + amount);
+                            p.setString(2, uuid.toString());
                             p.executeUpdate();
-                            GemsCore.getAccounts().put(player.getUniqueId(), current + amount);
+                            GemsCore.getAccounts().put(uuid, current + amount);
                         } catch (SQLException ex) {
                             ex.printStackTrace();
                         }
                     }else{
-                        userConfig.getConfig(player).set("Balance", current + amount);
-                        GemsCore.getAccounts().put(player.getUniqueId(), current + amount);
-                        userConfig.saveUser(player);
+                        userConfig.getConfig(uuid).set("Balance", current + amount);
+                        GemsCore.getAccounts().put(uuid, current + amount);
+                        userConfig.saveUser(uuid);
                     }
                 }
                 else if(action == EcoAction.WITHDRAW){
@@ -116,50 +125,50 @@ public class Hikari {
                     if(GemsCore.isHikari()) {
                         try (Connection connection = getHikari().getConnection()) {
                             p = connection.prepareStatement(updateString);
-                            p.setLong(1, current - amount);
-                            p.setString(2, player.getUniqueId().toString());
+                            p.setDouble(1, current - amount);
+                            p.setString(2, uuid.toString());
                             p.executeUpdate();
-                            GemsCore.getAccounts().put(player.getUniqueId(), current - amount);
+                            GemsCore.getAccounts().put(uuid, current - amount);
                         } catch (SQLException ex) {
                             ex.printStackTrace();
                         }
                     }else{
-                        userConfig.getConfig(player).set("Balance", current - amount);
-                        GemsCore.getAccounts().put(player.getUniqueId(), current - amount);
-                        userConfig.saveUser(player);
+                        userConfig.getConfig(uuid).set("Balance", current - amount);
+                        GemsCore.getAccounts().put(uuid, current - amount);
+                        userConfig.saveUser(uuid);
                     }
                 }
                 else if(action == EcoAction.SET){
                     if(GemsCore.isHikari()) {
                         try (Connection connection = getHikari().getConnection()) {
                             p = connection.prepareStatement(updateString);
-                            p.setLong(1, amount);
-                            p.setString(2, player.getUniqueId().toString());
+                            p.setDouble(1, amount);
+                            p.setString(2, uuid.toString());
                             p.executeUpdate();
-                            GemsCore.getAccounts().put(player.getUniqueId(), amount);
+                            GemsCore.getAccounts().put(uuid, amount);
                         } catch (SQLException ex) {
                             ex.printStackTrace();
                         }
                     }else{
-                        userConfig.getConfig(player).set("Balance", amount);
-                        GemsCore.getAccounts().put(player.getUniqueId(), amount);
-                        userConfig.saveUser(player);
+                        userConfig.getConfig(uuid).set("Balance", amount);
+                        GemsCore.getAccounts().put(uuid, amount);
+                        userConfig.saveUser(uuid);
                     }
                 }
             }
         }.runTaskAsynchronously(GemsCore.getInstance());
     }
 
-    public static long getSavedBalance(Player player){
+    public static double getBalance(UUID uuid){
         PreparedStatement p;
         String getDataString = "SELECT * FROM `accounts` WHERE `uuid`=?";
 
         try (Connection connection = getHikari().getConnection()){
             p = connection.prepareStatement(getDataString);
-            p.setString(1, player.getUniqueId().toString());
+            p.setString(1, uuid.toString());
             ResultSet rs = p.executeQuery();
             if(rs.next()){
-                return rs.getLong("balance");
+                return rs.getDouble("balance");
             }
         }
         catch(SQLException ex){

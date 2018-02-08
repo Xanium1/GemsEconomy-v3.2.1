@@ -1,18 +1,27 @@
-package me.johncrafted.gemseconomy;
+/*
+ * Copyright Xanium Development (c) 2013-2018. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar branding
+ * are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming
+ * any contents as your own will break the terms of the license, and void any agreements with you, the third party.
+ * Thank you.
+ */
 
-import me.johncrafted.gemseconomy.backend.ConfigWriter;
-import me.johncrafted.gemseconomy.backend.Hikari;
-import me.johncrafted.gemseconomy.backend.UserConfig;
-import me.johncrafted.gemseconomy.commands.BalanceCommand;
-import me.johncrafted.gemseconomy.commands.ChequeCommand;
-import me.johncrafted.gemseconomy.commands.EconomyCommand;
-import me.johncrafted.gemseconomy.commands.PayCommand;
-import me.johncrafted.gemseconomy.listeners.ChequeListener;
-import me.johncrafted.gemseconomy.listeners.EconomyListener;
-import me.johncrafted.gemseconomy.nbt.NMSVersjon;
-import me.johncrafted.gemseconomy.utils.Cheque;
+package me.xanium.gemseconomy;
+
+import me.xanium.gemseconomy.backend.ConfigWriter;
+import me.xanium.gemseconomy.backend.Hikari;
+import me.xanium.gemseconomy.backend.UserConfig;
+import me.xanium.gemseconomy.commands.BalanceCommand;
+import me.xanium.gemseconomy.commands.ChequeCommand;
+import me.xanium.gemseconomy.commands.EconomyCommand;
+import me.xanium.gemseconomy.commands.PayCommand;
+import me.xanium.gemseconomy.listeners.ChequeListener;
+import me.xanium.gemseconomy.listeners.EconomyListener;
+import me.xanium.gemseconomy.nbt.NMSVersion;
+import me.xanium.gemseconomy.utils.Cheque;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,19 +40,28 @@ import java.util.logging.Level;
 public class GemsCore extends JavaPlugin {
 
     private static GemsCore instance;
-    private static Map<UUID, Long> accounts = new HashMap<>();
+    private static Map<UUID, Double> accounts = new HashMap<>();
     private static ConsoleCommandSender consoleCommandSender = Bukkit.getConsoleSender();
-    private NMSVersjon nmsVersion;
+    private NMSVersion nmsVersion;
+    private FileConfiguration data;
     private ConfigWriter defcfg;
     public static boolean mysql = false;
+    private boolean vault = false;
+
+    @Override
+    public void onLoad(){
+        defcfg = new ConfigWriter(this);
+        defcfg.loadDefaultConfig();
+
+        data = UserConfig.getInstance().getConfig(this, "loggedPlayers");
+        UserConfig.getInstance().saveConfig(this, "loggedPlayers");
+    }
 
     @Override
     public void onEnable(){
         consoleCommandSender.sendMessage("§a[GemsEconomy] §7Enabling..");
         instance = this;
-        nmsVersion = new NMSVersjon();
-
-        defcfg = new ConfigWriter(this);
+        nmsVersion = new NMSVersion();
 
         registerListeners();
         registerCommands();
@@ -52,12 +70,15 @@ public class GemsCore extends JavaPlugin {
         if(getConfig().getBoolean("cheque.enable")) {
             Cheque.setChequeBase();
         }
+
+        setVault(vaultEnabled());
         consoleCommandSender.sendMessage("§a[GemsEconomy] §7Enabled.");
     }
 
     @Override
     public void onDisable(){
         consoleCommandSender.sendMessage("§a[GemsEconomy] §7Disabling..");
+
         if(Hikari.getHikari() !=null){
             Hikari.getHikari().close();
         }
@@ -89,11 +110,11 @@ public class GemsCore extends JavaPlugin {
     }
 
     private void registerCommands(){
-        getCommand("balance").setExecutor(new BalanceCommand());
-        getCommand("eco").setExecutor(new EconomyCommand());
-        getCommand("pay").setExecutor(new PayCommand());
+        getCommand("gbalance").setExecutor(new BalanceCommand());
+        getCommand("geco").setExecutor(new EconomyCommand());
+        getCommand("gpay").setExecutor(new PayCommand());
         if(getConfig().getBoolean("cheque.enable")) {
-            getCommand("cheque").setExecutor(new ChequeCommand());
+            getCommand("gcheque").setExecutor(new ChequeCommand());
         }
         consoleCommandSender.sendMessage("§a[GemsEconomy] §7Loaded commands.");
     }
@@ -101,12 +122,16 @@ public class GemsCore extends JavaPlugin {
     private void loadAccounts(){
         for (Player players : Bukkit.getOnlinePlayers()){
             if(GemsCore.isHikari()){
-                GemsCore.getAccounts().put(players.getUniqueId(), Hikari.getSavedBalance(players));
+                GemsCore.getAccounts().put(players.getUniqueId(), Hikari.getBalance(players.getUniqueId()));
             }else{
                 UserConfig userConfig = UserConfig.getInstance();
-                GemsCore.getAccounts().put(players.getUniqueId(), userConfig.getConfig(players).getLong("Balance"));
+                GemsCore.getAccounts().put(players.getUniqueId(), userConfig.getConfig(players.getUniqueId()).getDouble("Balance"));
             }
         }
+    }
+
+    public static boolean vaultEnabled() {
+        return Bukkit.getPluginManager().isPluginEnabled("Vault");
     }
 
     public static GemsCore getInstance() {
@@ -121,7 +146,11 @@ public class GemsCore extends JavaPlugin {
         return defcfg;
     }
 
-    public static Map<UUID, Long> getAccounts() {
+    public FileConfiguration getData() {
+        return data;
+    }
+
+    public static Map<UUID, Double> getAccounts() {
         return accounts;
     }
 
@@ -129,7 +158,15 @@ public class GemsCore extends JavaPlugin {
         return consoleCommandSender;
     }
 
-    public NMSVersjon getNmsVersion() {
+    public NMSVersion getNmsVersion() {
         return nmsVersion;
+    }
+
+    public boolean isVault() {
+        return vault;
+    }
+
+    public void setVault(boolean vault) {
+        this.vault = vault;
     }
 }

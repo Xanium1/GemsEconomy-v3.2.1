@@ -1,4 +1,4 @@
-package me.johncrafted.gemseconomy.api;
+package me.xanium.gemseconomy.api;
 
 /**
  * Created by John on 10.06.2017.

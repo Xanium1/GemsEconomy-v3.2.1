@@ -6,9 +6,9 @@
  * Thank you.
  */
 
-package me.johncrafted.gemseconomy.nbt;
+package me.xanium.gemseconomy.nbt;
 
-import me.johncrafted.gemseconomy.GemsCore;
+import me.xanium.gemseconomy.GemsCore;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 /**
  * Created by John on 08.05.2017.
  **/
-public class NBTRefleksjon {
+public class NBTReflection {
 
     @SuppressWarnings("rawtypes")
     private static Class getCraftItemstack() {

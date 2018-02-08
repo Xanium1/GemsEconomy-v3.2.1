@@ -1,10 +1,18 @@
-package me.johncrafted.gemseconomy.commands;
+/*
+ * Copyright Xanium Development (c) 2013-2018. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar branding
+ * are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming
+ * any contents as your own will break the terms of the license, and void any agreements with you, the third party.
+ * Thank you.
+ */
 
-import me.johncrafted.gemseconomy.GemsCore;
-import me.johncrafted.gemseconomy.backend.Hikari;
-import me.johncrafted.gemseconomy.api.EcoAction;
-import me.johncrafted.gemseconomy.utils.Messages;
-import me.johncrafted.gemseconomy.utils.UtilNumber;
+package me.xanium.gemseconomy.commands;
+
+import me.xanium.gemseconomy.GemsCore;
+import me.xanium.gemseconomy.backend.Hikari;
+import me.xanium.gemseconomy.api.EcoAction;
+import me.xanium.gemseconomy.utils.FormatUtil;
+import me.xanium.gemseconomy.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,11 +45,11 @@ public class PayCommand implements CommandExecutor {
             Player target = Bukkit.getPlayer(args[0]);
             if(target != null){
                 if(!target.equals(player)) {
-                    if (UtilNumber.validateInput(player, args[1])) {
-                        long amount = Long.valueOf(args[1]);
+                    if (FormatUtil.validateInput(player, args[1])) {
+                        double amount = Double.valueOf(args[1]);
                         if (GemsCore.getAccounts().get(player.getUniqueId()) >= amount) {
-                            Hikari.updateBalance(EcoAction.WITHDRAW, player, amount);
-                            Hikari.updateBalance(EcoAction.DEPOSIT, target, amount);
+                            Hikari.updateBalance(EcoAction.WITHDRAW, player.getUniqueId(), amount);
+                            Hikari.updateBalance(EcoAction.DEPOSIT, target.getUniqueId(), amount);
                             player.sendMessage(Messages.getPrefix() + Messages.getPayerMessage().replace("{player}", target.getName()).replace("{amount}", args[1]));
                             target.sendMessage(Messages.getPrefix() + Messages.getPaidMessage().replace("{player}", player.getName()).replace("{amount}", args[1]));
                             return true;

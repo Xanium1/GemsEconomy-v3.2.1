@@ -1,10 +1,10 @@
-package me.johncrafted.gemseconomy.commands;
+package me.xanium.gemseconomy.commands;
 
-import me.johncrafted.gemseconomy.GemsCore;
-import me.johncrafted.gemseconomy.backend.Hikari;
-import me.johncrafted.gemseconomy.api.EcoAction;
-import me.johncrafted.gemseconomy.utils.Messages;
-import me.johncrafted.gemseconomy.utils.UtilNumber;
+import me.xanium.gemseconomy.GemsCore;
+import me.xanium.gemseconomy.backend.Hikari;
+import me.xanium.gemseconomy.api.EcoAction;
+import me.xanium.gemseconomy.utils.FormatUtil;
+import me.xanium.gemseconomy.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,9 +31,9 @@ public class EconomyCommand implements CommandExecutor {
             if(args[0].equalsIgnoreCase("add")){
                 Player target = Bukkit.getPlayer(args[1]);
                 if(target != null){
-                    if(UtilNumber.validateInput(sender, args[2])){
-                        long amount = Long.valueOf(args[2]);
-                        Hikari.updateBalance(EcoAction.DEPOSIT, target, amount);
+                    if(FormatUtil.validateInput(sender, args[2])){
+                        double amount = Double.valueOf(args[2]);
+                        Hikari.updateBalance(EcoAction.DEPOSIT, target.getUniqueId(), amount);
                         sender.sendMessage(Messages.getPrefix() + Messages.getAddMessage().replace("{player}", target.getName()).replace("{amount}", args[2]));
                         return true;
                     }
@@ -44,10 +44,10 @@ public class EconomyCommand implements CommandExecutor {
             else if(args[0].equalsIgnoreCase("take")){
                 Player target = Bukkit.getPlayer(args[1]);
                 if(target != null){
-                    if(UtilNumber.validateInput(sender, args[2])){
-                        long amount = Long.valueOf(args[2]);
+                    if(FormatUtil.validateInput(sender, args[2])){
+                        double amount = Double.valueOf(args[2]);
                         if(GemsCore.getAccounts().get(target.getUniqueId()) >= amount) {
-                            Hikari.updateBalance(EcoAction.WITHDRAW, target, amount);
+                            Hikari.updateBalance(EcoAction.WITHDRAW, target.getUniqueId(), amount);
                             sender.sendMessage(Messages.getPrefix() + Messages.getTakeMessage().replace("{player}", target.getName()).replace("{amount}", args[2]));
                         }else{
                             sender.sendMessage(Messages.getPrefix() + Messages.getNegativeValue());
@@ -60,9 +60,9 @@ public class EconomyCommand implements CommandExecutor {
             else if(args[0].equalsIgnoreCase("set")){
                 Player target = Bukkit.getPlayer(args[1]);
                 if(target != null){
-                    if(UtilNumber.validateInput(sender, args[2])){
-                        long amount = Long.valueOf(args[2].replace("-", ""));
-                        Hikari.updateBalance(EcoAction.SET, target, amount);
+                    if(FormatUtil.validateInput(sender, args[2])){
+                        double amount = Double.valueOf(args[2]);
+                        Hikari.updateBalance(EcoAction.SET, target.getUniqueId(), amount);
                         sender.sendMessage(Messages.getPrefix() + Messages.getSetMessage().replace("{player}", target.getName()).replace("{amount}", args[2]));
                     }
                 }else{

@@ -1,6 +1,14 @@
-package me.johncrafted.gemseconomy.backend;
+/*
+ * Copyright Xanium Development (c) 2013-2018. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar branding
+ * are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming
+ * any contents as your own will break the terms of the license, and void any agreements with you, the third party.
+ * Thank you.
+ */
 
-import me.johncrafted.gemseconomy.GemsCore;
+package me.xanium.gemseconomy.backend;
+
+import me.xanium.gemseconomy.GemsCore;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -15,17 +23,23 @@ public class ConfigWriter {
 
     public ConfigWriter(GemsCore plugin){
         this.plugin = plugin;
-        loadDefaultConfig();
     }
 
-    private void loadDefaultConfig() {
+    public void loadDefaultConfig() {
 
         FileConfiguration config = plugin.getConfig();
 
         config.options().header(plugin.getDescription().getName() +
                 "\nVersion: " + plugin.getDescription().getVersion() +
                 "\nDeveloper(s): " + plugin.getDescription().getAuthors() +
-                "\nMain configuration file. \n\nCopyrighted under (All Rights Reserved)!" +
+                "\n\n/*\n" +
+                " * Copyright Xanium Development (c) 2013-2018. All Rights Reserved.\n" +
+                " * Any code contained within this document, and any associated APIs with similar branding\n" +
+                " * are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming\n" +
+                " * any contents as your own will break the terms of the license, and void any agreements with you, the third party.\n" +
+                " * Thank you.\n" +
+                " */" +
+                "\n\nGemsEconomy Main Configuration file." +
                 "\n\nAvailable storage options: yml, mysql" +
                 "\n\nYou can customize the messages as you want. If you have an mysql database,\nyou'll need to write the login credentials down under." +
                 "\n\nWARNING: Do not reload the server if you are using yml/flatfile storage!!\nIf you really want to reload the server, you will have to kick all the players first!!");
@@ -40,7 +54,7 @@ public class ConfigWriter {
 
         config.addDefault("Settings.startingbal", 100);
 
-        config.addDefault("cheque.enable", true);
+        config.addDefault("cheque.enable", false);
         config.addDefault("cheque.material", Material.PAPER.toString());
         config.addDefault("cheque.name", "&aGems Cheque");
         config.addDefault("cheque.lore", Arrays.asList("&7Value: {gems} gems.", "&7&oWritten by {player}"));

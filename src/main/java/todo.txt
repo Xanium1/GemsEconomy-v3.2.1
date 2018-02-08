@@ -16,10 +16,5 @@
 # ------------------------------------------------------------------------------------------------------------------------------------------
 
 Todo List:
-
-- Update balances in Hikari. (Done)
-- Balance command. (Done)
-- Add, remove, set command. (Done)
-- Saving userdata. (Done)
-- Customizable messages in config. (Done)
-- Finish the API class (Done).
+Vault Support
+Offline Player Support

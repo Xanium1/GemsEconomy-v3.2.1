@@ -1,17 +1,16 @@
-package me.johncrafted.gemseconomy.listeners;
+package me.xanium.gemseconomy.listeners;
 
-import me.johncrafted.gemseconomy.GemsCore;
-import me.johncrafted.gemseconomy.api.EcoAction;
-import me.johncrafted.gemseconomy.api.GemsAPI;
-import me.johncrafted.gemseconomy.nbt.NBTGjenstand;
-import me.johncrafted.gemseconomy.utils.Cheque;
-import me.johncrafted.gemseconomy.utils.Messages;
+import me.xanium.gemseconomy.GemsCore;
+import me.xanium.gemseconomy.api.EcoAction;
+import me.xanium.gemseconomy.api.GemsAPI;
+import me.xanium.gemseconomy.nbt.NBTItem;
+import me.xanium.gemseconomy.utils.Cheque;
+import me.xanium.gemseconomy.utils.Messages;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by John on 16.07.2017.
@@ -24,7 +23,7 @@ public class ChequeListener implements Listener {
 
         if(player.hasPermission("gemseconomy.fastredeem")) {
             if (player.getInventory().getItemInMainHand() != null && player.getInventory().getItemInMainHand().getType().equals(Material.valueOf(GemsCore.getInstance().getConfig().getString("cheque.material")))) {
-                NBTGjenstand item = new NBTGjenstand(player.getInventory().getItemInMainHand());
+                NBTItem item = new NBTItem(player.getInventory().getItemInMainHand());
                 if (item.getItem().getItemMeta().hasDisplayName() && item.getItem().getItemMeta().hasLore() && item.hasKey("value")) {
                     if (Cheque.isAValidCheque(item)) {
                         if (item.getString("value") != null) {

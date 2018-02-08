@@ -6,7 +6,7 @@
  * Thank you.
  */
 
-package me.johncrafted.gemseconomy.nbt;
+package me.xanium.gemseconomy.nbt;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Created by John on 08.05.2017.
  **/
-public class NMSVersjon {
+public class NMSVersion {
 
     public static final String UNSUPPORTED = "Unsupported";
 
@@ -53,7 +53,7 @@ public class NMSVersjon {
         return versionID;
     }
 
-    public NMSVersjon() {
+    public NMSVersion() {
         this.versionMap = new HashMap<>();
         this.loadVersions();
 

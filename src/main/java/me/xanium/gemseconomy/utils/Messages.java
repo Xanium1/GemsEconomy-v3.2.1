@@ -1,6 +1,6 @@
-package me.johncrafted.gemseconomy.utils;
+package me.xanium.gemseconomy.utils;
 
-import me.johncrafted.gemseconomy.GemsCore;
+import me.xanium.gemseconomy.GemsCore;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;

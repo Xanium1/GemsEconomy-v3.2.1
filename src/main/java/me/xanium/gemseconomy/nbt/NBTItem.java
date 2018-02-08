@@ -6,18 +6,18 @@
  * Thank you.
  */
 
-package me.johncrafted.gemseconomy.nbt;
+package me.xanium.gemseconomy.nbt;
 
 import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by John on 08.05.2017.
  **/
-public class NBTGjenstand {
+public class NBTItem {
 
     private ItemStack bukkititem;
 
-    public NBTGjenstand(ItemStack Item) {
+    public NBTItem(ItemStack Item) {
         bukkititem = Item.clone();
     }
 
@@ -26,38 +26,38 @@ public class NBTGjenstand {
     }
 
     public void setString(String Key, String Text) {
-        bukkititem = NBTRefleksjon.setString(bukkititem, Key, Text);
+        bukkititem = NBTReflection.setString(bukkititem, Key, Text);
     }
 
     public String getString(String Key) {
-        return NBTRefleksjon.getString(bukkititem, Key);
+        return NBTReflection.getString(bukkititem, Key);
     }
 
     public void setInteger(String key, Integer Int) {
-        bukkititem = NBTRefleksjon.setInt(bukkititem, key, Int);
+        bukkititem = NBTReflection.setInt(bukkititem, key, Int);
     }
 
     public Integer getInteger(String key) {
-        return NBTRefleksjon.getInt(bukkititem, key);
+        return NBTReflection.getInt(bukkititem, key);
     }
 
     public void setDouble(String key, Double d) {
-        bukkititem = NBTRefleksjon.setDouble(bukkititem, key, d);
+        bukkititem = NBTReflection.setDouble(bukkititem, key, d);
     }
 
     public Double getDouble(String key) {
-        return NBTRefleksjon.getDouble(bukkititem, key);
+        return NBTReflection.getDouble(bukkititem, key);
     }
 
     public void setBoolean(String key, Boolean b) {
-        bukkititem = NBTRefleksjon.setBoolean(bukkititem, key, b);
+        bukkititem = NBTReflection.setBoolean(bukkititem, key, b);
     }
 
     public Boolean getBoolean(String key) {
-        return NBTRefleksjon.getBoolean(bukkititem, key);
+        return NBTReflection.getBoolean(bukkititem, key);
     }
 
     public Boolean hasKey(String key) {
-        return NBTRefleksjon.hasKey(bukkititem, key);
+        return NBTReflection.hasKey(bukkititem, key);
     }
 }

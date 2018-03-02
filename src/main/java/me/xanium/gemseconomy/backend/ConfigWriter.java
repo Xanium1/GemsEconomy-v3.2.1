@@ -32,17 +32,16 @@ public class ConfigWriter {
         config.options().header(plugin.getDescription().getName() +
                 "\nVersion: " + plugin.getDescription().getVersion() +
                 "\nDeveloper(s): " + plugin.getDescription().getAuthors() +
-                "\n\n/*\n" +
-                " * Copyright Xanium Development (c) 2013-2018. All Rights Reserved.\n" +
-                " * Any code contained within this document, and any associated APIs with similar branding\n" +
-                " * are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming\n" +
-                " * any contents as your own will break the terms of the license, and void any agreements with you, the third party.\n" +
-                " * Thank you.\n" +
-                " */" +
+                "\n\n\n" +
+                " Copyright Xanium Development (c) 2013-2018. All Rights Reserved.\n" +
+                " Any code contained within this document, and any associated APIs with similar branding\n" +
+                " are the sole property of Xanium Development. Distribution, reproduction, taking snippets or claiming\n" +
+                " any contents as your own will break the terms of the license, and void any agreements with you, the third party.\n" +
+                " Thank you.\n" +
                 "\n\nGemsEconomy Main Configuration file." +
                 "\n\nAvailable storage options: yml, mysql" +
-                "\n\nYou can customize the messages as you want. If you have an mysql database,\nyou'll need to write the login credentials down under." +
-                "\n\nWARNING: Do not reload the server if you are using yml/flatfile storage!!\nIf you really want to reload the server, you will have to kick all the players first!!");
+                "\n\nYou can customize the messages as you want. If you have a mysql database,\nyou'll need to write the login credentials down under." +
+                "\n\nThe settings are really self explanatory, if you have issues do not hesitate to contact me over spigot!");
 
         config.addDefault("storage", "yml");
 
@@ -53,6 +52,8 @@ public class ConfigWriter {
         config.addDefault("mysql.password", "password");
 
         config.addDefault("Settings.startingbal", 100);
+        config.addDefault("Settings.vault_hook", false);
+        config.addDefault("Settings.debug", false);
 
         config.addDefault("cheque.enable", false);
         config.addDefault("cheque.material", Material.PAPER.toString());

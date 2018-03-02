@@ -19,6 +19,9 @@ import me.xanium.gemseconomy.listeners.ChequeListener;
 import me.xanium.gemseconomy.listeners.EconomyListener;
 import me.xanium.gemseconomy.nbt.NMSVersion;
 import me.xanium.gemseconomy.utils.Cheque;
+import me.xanium.gemseconomy.utils.Metrics;
+import me.xanium.gemseconomy.utils.Updater;
+import me.xanium.gemseconomy.vault.VaultHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,17 +39,18 @@ import java.util.logging.Level;
  * Plugin was started on 09.04.2016. *
  *************************************/
 
-// Plugin is created under all rights reserved license.
 public class GemsCore extends JavaPlugin {
 
     private static GemsCore instance;
     private static Map<UUID, Double> accounts = new HashMap<>();
-    private static ConsoleCommandSender consoleCommandSender = Bukkit.getConsoleSender();
+    private ConsoleCommandSender consoleCommandSender = Bukkit.getConsoleSender();
     private NMSVersion nmsVersion;
     private FileConfiguration data;
     private ConfigWriter defcfg;
+    private Metrics metrics;
+    private VaultHandler vaultHandler;
     public static boolean mysql = false;
-    private boolean vault = false;
+    private boolean debug = false;
 
     @Override
     public void onLoad(){
@@ -63,15 +67,31 @@ public class GemsCore extends JavaPlugin {
         instance = this;
         nmsVersion = new NMSVersion();
 
-        registerListeners();
-        registerCommands();
         loadStorage();
         loadAccounts();
+
+        registerListeners();
+        registerCommands();
         if(getConfig().getBoolean("cheque.enable")) {
             Cheque.setChequeBase();
         }
 
-        setVault(vaultEnabled());
+        if(getConfig().getBoolean("Settings.vault_hook")){
+            if(vaultEnabled()) {
+                vaultHandler = new VaultHandler(this);
+                vaultHandler.hook();
+                getConsole().sendMessage("§a[GemsEconomy] §7Vault compatibility enabled.");
+            }else{
+                getConsole().sendMessage("§a[GemsEconomy] §cVault not found, vault compat not loading.");
+            }
+        }else{
+            getConsole().sendMessage("§a[GemsEconomy] §eVault compatibility not enabled. Not hooking into vault.");
+        }
+
+        setDebug(getConfig().getBoolean("debug"));
+        checkForUpdate();
+
+        metrics = new Metrics(this);
         consoleCommandSender.sendMessage("§a[GemsEconomy] §7Enabled.");
     }
 
@@ -82,7 +102,31 @@ public class GemsCore extends JavaPlugin {
         if(Hikari.getHikari() !=null){
             Hikari.getHikari().close();
         }
+
+        saveAccounts();
+        if(vaultHandler != null) {
+            vaultHandler.unhook();
+        }
+
         consoleCommandSender.sendMessage("§a[GemsEconomy] §7Disabled.");
+    }
+
+    private void checkForUpdate() {
+        Updater updater = new Updater(this);
+        try {
+            if (updater.checkForUpdates()) {
+                consoleCommandSender.sendMessage("§a[GemsEconomy] §7--------------------------------");
+                consoleCommandSender.sendMessage("§a[GemsEconomy] §7New Version: " + updater.getNewVersion());
+                consoleCommandSender.sendMessage("§a[GemsEconomy] §7Current Version: " + updater.getCurrentVersion());
+                consoleCommandSender.sendMessage("§a[GemsEconomy] §7Download link: " + updater.getResourceURL());
+                consoleCommandSender.sendMessage("§a[GemsEconomy] §7--------------------------------");
+            }
+        } catch (Exception e) {
+            consoleCommandSender.sendMessage("§a[GemsEconomy] §7Could not check for updates! Error log will follow if debug is enabled.");
+            if(isDebug()) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void loadStorage(){
@@ -130,6 +174,16 @@ public class GemsCore extends JavaPlugin {
         }
     }
 
+    private void saveAccounts(){
+        for(Player player : Bukkit.getOnlinePlayers()){
+            if (!GemsCore.isHikari()) {
+                UserConfig uc = UserConfig.getInstance();
+                uc.getConfig(player.getUniqueId()).set("Balance", GemsCore.getAccounts().get(player.getUniqueId()));
+                uc.saveUser(player.getUniqueId());
+            }
+        }
+    }
+
     public static boolean vaultEnabled() {
         return Bukkit.getPluginManager().isPluginEnabled("Vault");
     }
@@ -154,7 +208,7 @@ public class GemsCore extends JavaPlugin {
         return accounts;
     }
 
-    public static ConsoleCommandSender getConsole() {
+    public ConsoleCommandSender getConsole() {
         return consoleCommandSender;
     }
 
@@ -162,11 +216,15 @@ public class GemsCore extends JavaPlugin {
         return nmsVersion;
     }
 
-    public boolean isVault() {
-        return vault;
+    public Metrics getMetrics() {
+        return metrics;
     }
 
-    public void setVault(boolean vault) {
-        this.vault = vault;
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

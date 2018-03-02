@@ -48,8 +48,8 @@ public class PayCommand implements CommandExecutor {
                     if (FormatUtil.validateInput(player, args[1])) {
                         double amount = Double.valueOf(args[1]);
                         if (GemsCore.getAccounts().get(player.getUniqueId()) >= amount) {
-                            Hikari.updateBalance(EcoAction.WITHDRAW, player.getUniqueId(), amount);
-                            Hikari.updateBalance(EcoAction.DEPOSIT, target.getUniqueId(), amount);
+                            Hikari.updateBalance(EcoAction.WITHDRAW, player.getUniqueId(), amount, false);
+                            Hikari.updateBalance(EcoAction.DEPOSIT, target.getUniqueId(), amount, false);
                             player.sendMessage(Messages.getPrefix() + Messages.getPayerMessage().replace("{player}", target.getName()).replace("{amount}", args[1]));
                             target.sendMessage(Messages.getPrefix() + Messages.getPaidMessage().replace("{player}", player.getName()).replace("{amount}", args[1]));
                             return true;

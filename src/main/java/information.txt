@@ -15,6 +15,9 @@
 # NB, You have to put the text color's code after any placeholders like those up above this string sentence.
 # ------------------------------------------------------------------------------------------------------------------------------------------
 
-Todo List:
-Vault Support
-Offline Player Support
+Change log:
+- Updated compiler versions
+- Updated Hikari to 2.7.8
+- Added built-in Vault support
+- Added Update checker
+- Added Metrics

@@ -93,7 +93,7 @@ public class Hikari {
         }.runTaskAsynchronously(GemsCore.getInstance());
     }
 
-    public static void updateBalance(EcoAction action, UUID uuid, double amount){
+    public static void updateBalance(EcoAction action, UUID uuid, double amount, boolean offline){
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -110,13 +110,17 @@ public class Hikari {
                             p.setDouble(1, current + amount);
                             p.setString(2, uuid.toString());
                             p.executeUpdate();
-                            GemsCore.getAccounts().put(uuid, current + amount);
+                            if(!offline) {
+                                GemsCore.getAccounts().put(uuid, current + amount);
+                            }
                         } catch (SQLException ex) {
                             ex.printStackTrace();
                         }
                     }else{
                         userConfig.getConfig(uuid).set("Balance", current + amount);
-                        GemsCore.getAccounts().put(uuid, current + amount);
+                        if(!offline) {
+                            GemsCore.getAccounts().put(uuid, current + amount);
+                        }
                         userConfig.saveUser(uuid);
                     }
                 }
@@ -128,13 +132,17 @@ public class Hikari {
                             p.setDouble(1, current - amount);
                             p.setString(2, uuid.toString());
                             p.executeUpdate();
-                            GemsCore.getAccounts().put(uuid, current - amount);
+                            if(!offline) {
+                                GemsCore.getAccounts().put(uuid, current - amount);
+                            }
                         } catch (SQLException ex) {
                             ex.printStackTrace();
                         }
                     }else{
                         userConfig.getConfig(uuid).set("Balance", current - amount);
-                        GemsCore.getAccounts().put(uuid, current - amount);
+                        if(!offline) {
+                            GemsCore.getAccounts().put(uuid, current - amount);
+                        }
                         userConfig.saveUser(uuid);
                     }
                 }
@@ -145,13 +153,17 @@ public class Hikari {
                             p.setDouble(1, amount);
                             p.setString(2, uuid.toString());
                             p.executeUpdate();
-                            GemsCore.getAccounts().put(uuid, amount);
+                            if(!offline) {
+                                GemsCore.getAccounts().put(uuid, amount);
+                            }
                         } catch (SQLException ex) {
                             ex.printStackTrace();
                         }
                     }else{
                         userConfig.getConfig(uuid).set("Balance", amount);
-                        GemsCore.getAccounts().put(uuid, amount);
+                        if(!offline) {
+                            GemsCore.getAccounts().put(uuid, amount);
+                        }
                         userConfig.saveUser(uuid);
                     }
                 }

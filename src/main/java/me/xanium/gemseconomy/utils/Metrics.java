@@ -316,7 +316,7 @@ import java.util.zip.GZIPOutputStream;
             connection.addRequestProperty("Content-Encoding", "gzip"); // We gzip our request
             connection.addRequestProperty("Content-Length", String.valueOf(compressedData.length));
             connection.setRequestProperty("Content-Type", "application/json"); // We send our data in JSON format
-            connection.setRequestProperty("User-Agent", "MC-Server/" + B_STATS_VERSION);
+            connection.setRequestProperty("EconomyUser-Agent", "MC-Server/" + B_STATS_VERSION);
 
             // Send data
             connection.setDoOutput(true);

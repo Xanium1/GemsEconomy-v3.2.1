@@ -20,6 +20,7 @@ import me.xanium.gemseconomy.listeners.EconomyListener;
 import me.xanium.gemseconomy.nbt.NMSVersion;
 import me.xanium.gemseconomy.utils.Cheque;
 import me.xanium.gemseconomy.utils.Metrics;
+import me.xanium.gemseconomy.utils.UUIDFetcher;
 import me.xanium.gemseconomy.utils.Updater;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import org.bukkit.Bukkit;
@@ -182,6 +183,19 @@ public class GemsCore extends JavaPlugin {
                 uc.saveUser(player.getUniqueId());
             }
         }
+    }
+
+    public UUID searchForUser(String name){
+        if(getServer().getPlayer(name) != null){
+            if(getServer().getPlayer(name).isOnline())return getServer().getPlayer(name).getUniqueId();
+        }
+
+        else if(isHikari() && Hikari.playerExists(name)){
+            return Hikari.getUUIDOfPlayer(name);
+        }
+        UUID uuid = UUIDFetcher.getUUIDOf(name);
+        if(uuid == null)return null;
+        return uuid;
     }
 
     public static boolean vaultEnabled() {

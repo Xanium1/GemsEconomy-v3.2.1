@@ -28,6 +28,7 @@ public class Hikari {
 
     private static HikariDataSource hikari;
     private GemsCore plugin = GemsCore.getInstance();
+    private static String table;
 
     public static HikariDataSource getHikari() {
         return hikari;
@@ -39,9 +40,11 @@ public class Hikari {
         String name = plugin.getConfig().getString("mysql.database");
         String username = plugin.getConfig().getString("mysql.username");
         String password = plugin.getConfig().getString("mysql.password");
+        table = plugin.getConfig().getString("mysql.table_name");
+        int poolSize = plugin.getConfig().getInt("mysql.connection_pool_size");
 
         hikari = new HikariDataSource();
-        hikari.setMaximumPoolSize(10);
+        hikari.setMaximumPoolSize(poolSize);
         hikari.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         hikari.addDataSourceProperty("serverName", address);
         hikari.addDataSourceProperty("port", port);
@@ -50,7 +53,7 @@ public class Hikari {
         hikari.addDataSourceProperty("password", password);
 
         try (Connection connection = hikari.getConnection()){
-            connection.prepareStatement("CREATE TABLE IF NOT EXISTS `accounts` (`uuid` VARCHAR(255), UNIQUE KEY idx(uuid), `name` VARCHAR(255), `balance` DOUBLE)").executeUpdate();
+            connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + table + "` (`uuid` VARCHAR(255), UNIQUE KEY idx(uuid), `name` VARCHAR(255), `balance` DOUBLE)").executeUpdate();
         }catch(SQLException ex){
             ex.printStackTrace();
         }
@@ -63,9 +66,9 @@ public class Hikari {
             public void run() {
                 PreparedStatement p;
 
-                String getPlayer = "SELECT * FROM `accounts` WHERE `uuid`=?";
-                String updatePlayer = "UPDATE `accounts` SET `name`=? WHERE `uuid`=?";
-                String createPlayer = "INSERT INTO `accounts` (`uuid`, `name`, `balance`) VALUES (?,?,?)";
+                String getPlayer = "SELECT * FROM `" + table + "` WHERE `uuid`=?";
+                String updatePlayer = "UPDATE `" + table + "` SET `name`=? WHERE `uuid`=?";
+                String createPlayer = "INSERT INTO `" + table + "` (`uuid`, `name`, `balance`) VALUES (?,?,?)";
 
                 try (Connection connection = getHikari().getConnection()){
                     p = connection.prepareStatement(getPlayer);
@@ -83,8 +86,9 @@ public class Hikari {
                         p = connection.prepareStatement(createPlayer);
                         p.setString(1, player.getUniqueId().toString());
                         p.setString(2, player.getName());
-                        p.setDouble(3, GemsCore.getInstance().getConfig().getLong("Settings.startingbal"));
+                        p.setDouble(3, GemsCore.getInstance().getConfig().getDouble("Settings.startingbal"));
                         p.executeUpdate();
+                        GemsCore.getAccounts().put(player.getUniqueId(), GemsCore.getInstance().getConfig().getDouble("Settings.startingbal"));
                     }
                 }catch(SQLException ex){
                     ex.printStackTrace();
@@ -99,7 +103,7 @@ public class Hikari {
             public void run() {
                 double current = GemsAPI.getBalance(uuid);
                 PreparedStatement p;
-                String updateString = "UPDATE `accounts` SET `balance`=? WHERE `uuid`=?";
+                String updateString = "UPDATE `" + table + "` SET `balance`=? WHERE `uuid`=?";
                 UserConfig userConfig = UserConfig.getInstance();
 
                 if(action == EcoAction.DEPOSIT){
@@ -173,7 +177,7 @@ public class Hikari {
 
     public static double getBalance(UUID uuid){
         PreparedStatement p;
-        String getDataString = "SELECT * FROM `accounts` WHERE `uuid`=?";
+        String getDataString = "SELECT * FROM `" + table + "` WHERE `uuid`=?";
 
         try (Connection connection = getHikari().getConnection()){
             p = connection.prepareStatement(getDataString);
@@ -189,4 +193,56 @@ public class Hikari {
 
         return -1;
     }
+
+    public static double getBalance(String name){
+        PreparedStatement p;
+        String getDataString = "SELECT * FROM `" + table + "` WHERE `name`=?";
+
+        try (Connection connection = getHikari().getConnection()){
+            p = connection.prepareStatement(getDataString);
+            p.setString(1, name);
+            ResultSet rs = p.executeQuery();
+            if(rs.next()){
+                return rs.getDouble("balance");
+            }
+        }
+        catch(SQLException ex){
+            ex.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public static boolean playerExists(String name){
+        PreparedStatement p;
+        String getDataString = "SELECT * FROM `" + table + "` WHERE `name`=?";
+        try (Connection connection = getHikari().getConnection()){
+            p = connection.prepareStatement(getDataString);
+            p.setString(1, name);
+            ResultSet rs = p.executeQuery();
+            return rs.next();
+        }
+        catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public static UUID getUUIDOfPlayer(String name){
+        PreparedStatement p;
+        String getDataString = "SELECT * FROM `" + table + "` WHERE `name`=?";
+        try (Connection connection = getHikari().getConnection()){
+            p = connection.prepareStatement(getDataString);
+            p.setString(1, name);
+            ResultSet rs = p.executeQuery();
+            if(rs.next()){
+                return UUID.fromString(rs.getString("uuid"));
+            }
+        }
+        catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
 }

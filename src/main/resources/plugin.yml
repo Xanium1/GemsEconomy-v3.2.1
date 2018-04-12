@@ -1,5 +1,5 @@
 name: GemsEconomy
-version: 3.0
+version: 3.2
 main: me.xanium.gemseconomy.GemsCore
 author: Xanium
 description: An custom economy plugin for spigot servers.
@@ -7,7 +7,7 @@ website: https://www.spigotmc.org/resources/gemseconomy.19655/
 commands:
   gbalance:
     usage: /gbalance (player)
-    aliases: [bal, gembal, gemsbalance, gemsbal, gbal]
+    aliases: [gembal, gemsbalance, gemsbal, gbal]
     description: Sends your balance or another players.
   geco:
     usage: /geco <args>

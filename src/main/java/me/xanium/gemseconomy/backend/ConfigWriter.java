@@ -40,7 +40,7 @@ public class ConfigWriter {
                 " Thank you.\n" +
                 "\n\nGemsEconomy Main Configuration file." +
                 "\n\nAvailable storage options: yml, mysql" +
-                "\n\nYou can customize the messages as you want. If you have a mysql database,\nyou'll need to write the login credentials down under." +
+                "\n\nYou can customize the messages as you want. If you have a mysql database,\nyou'll need to write the login credentials down under.\nIf there is a plugin that uses the table name 'accounts' change thie setting in this config." +
                 "\n\nThe settings are really self explanatory, if you have issues do not hesitate to contact me over spigot!");
 
         config.addDefault("storage", "yml");
@@ -50,6 +50,8 @@ public class ConfigWriter {
         config.addDefault("mysql.port", 3306);
         config.addDefault("mysql.username", "root");
         config.addDefault("mysql.password", "password");
+        config.addDefault("mysql.table_name", "accounts");
+        config.addDefault("mysql.connection_pool_size", 10);
 
         config.addDefault("Settings.startingbal", 100);
         config.addDefault("Settings.vault_hook", false);

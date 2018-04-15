@@ -1,5 +1,5 @@
 name: GemsEconomy
-version: 3.2
+version: 3.2.1
 main: me.xanium.gemseconomy.GemsCore
 author: Xanium
 description: An custom economy plugin for spigot servers.

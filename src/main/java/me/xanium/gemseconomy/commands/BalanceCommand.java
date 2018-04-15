@@ -57,7 +57,7 @@ public class BalanceCommand implements CommandExecutor {
                 p.sendMessage(Messages.getPrefix() + Messages.getBalance().replace("{gems}", FormatUtil.formatNumber(GemsAPI.getBalance(p.getUniqueId()))));
                 return;
             } else {
-                UUID id = plugin.searchForUser(args[1]);
+                UUID id = plugin.searchForUser(args[0]);
                 if (id != null) {
                     if (plugin.getServer().getPlayer(id) == null) {
                         if (GemsAPI.getBalance(id) != -1) {
